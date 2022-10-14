@@ -2,8 +2,8 @@
     <HeaderComp />
     <MainTitle />
     <EmployeeList @showMore="showMore" v-if="users" :users="users" />
-    <LoaderComp v-else />
-    <FormComp />
+    <LoaderComp v-if="loading" />
+    <FormComp @handleFormSubmit="handleFormSubmit" v-if="positions" :positions="positions" />
 </template>
 
 <script>
@@ -13,7 +13,7 @@ import EmployeeList from './components/EmployeeList'
 import FormComp from './components/FormComp'
 import LoaderComp from './components/LoaderComp'
 import './assets/normalize.css'
-import { fetchData } from './services/fetchUsers';
+import { fetchData, getPositions, registrationUser, getToken } from './services/fetchUsers';
 import { onMounted, ref, watch } from '@vue/runtime-core';
 
 export default {
@@ -22,17 +22,29 @@ export default {
   setup() {
     const users = ref(null);
     const page = ref(1);
+    const loading = ref(false);
+    const positions = ref(null);
 
     onMounted(() => {
       fetchData(page.value).then(resp => {
-        users.value = resp.users;
+        const getUsers = resp.users;
+        function sortRegistration(a, b) {
+          return a.registration_timestamp > b.registration_timestamp ? 1 : b.registration_timestamp > a.registration_timestamp ? -1 : 0;
+        }
+        getUsers.sort(sortRegistration);
+        users.value = getUsers;
+      })
+      getPositions().then(resp => {
+        positions.value = resp.positions;
       })
     })
 
     watch(page, (newValue, oldValue) => {
       if (oldValue !== newValue) {
         fetchData(page.value).then(resp => {
+          loading.value = true;
           users.value = resp.users;
+          loading.value = false;
         })
       }
     })
@@ -41,7 +53,12 @@ export default {
       page.value++;
     }
 
-    return { users, showMore }
+    const handleFormSubmit = async (data) => {
+      const token = await getToken();
+      registrationUser(token.token, data);
+    }
+
+    return { users, showMore, loading, positions, handleFormSubmit }
   }
 }
 </script>
