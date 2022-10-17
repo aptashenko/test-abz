@@ -42,7 +42,7 @@ export const registrationUser = (token, data) => {
         if (data.success) {
             console.log('we made it')
         } else {
-            console.log('bad request')
+            console.log('bad request');
         }
     }).catch(error => {
         console.log(error)

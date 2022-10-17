@@ -21,10 +21,16 @@ export default {
 <style lang="scss">
 .background {
     background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../assets/bg.jpg');
+    background-size: cover;
     .container {
         padding: 40px 16px 70px;
         flex-direction: column;
         align-items: center;
+        @media (min-width: 376px) {
+            padding: 90px 16px;
+            margin: 0 auto;
+                width: 55%;
+            }
     }
     &__title {
         text-align: center;

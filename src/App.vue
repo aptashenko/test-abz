@@ -1,7 +1,7 @@
 <template>
     <HeaderComp />
     <MainTitle />
-    <EmployeeList @showMore="showMore" v-if="users" :users="users" />
+    <EmployeeList :hidePageButton="hidePageButton" @showMore="showMore" v-if="users" :users="users" />
     <LoaderComp v-if="loading" />
     <FormComp @handleFormSubmit="handleFormSubmit" v-if="positions" :positions="positions" />
 </template>
@@ -14,7 +14,7 @@ import FormComp from './components/FormComp'
 import LoaderComp from './components/LoaderComp'
 import './assets/normalize.css'
 import { fetchData, getPositions, registrationUser, getToken } from './services/fetchUsers';
-import { onMounted, ref, watch } from '@vue/runtime-core';
+import { computed, onMounted, ref, watch } from '@vue/runtime-core';
 
 export default {
   name: 'App',
@@ -24,9 +24,16 @@ export default {
     const page = ref(1);
     const loading = ref(false);
     const positions = ref(null);
+    const totalPages = ref(null);
+    const error = ref(null);
+
+    const hidePageButton = computed(() => {
+      return page.value === totalPages.value;
+    })
 
     onMounted(() => {
       fetchData(page.value).then(resp => {
+        totalPages.value = resp.total_pages;
         const getUsers = resp.users;
         function sortRegistration(a, b) {
           return a.registration_timestamp > b.registration_timestamp ? 1 : b.registration_timestamp > a.registration_timestamp ? -1 : 0;
@@ -58,7 +65,7 @@ export default {
       registrationUser(token.token, data);
     }
 
-    return { users, showMore, loading, positions, handleFormSubmit }
+    return { users, showMore, loading, positions, handleFormSubmit, hidePageButton, error }
   }
 }
 </script>
@@ -82,6 +89,9 @@ html {
 #app {
   margin: 0 auto;
   max-width: 360px;
+  @media (min-width: 376px) {
+      max-width: 768px;
+    }
 }
 
 .container {

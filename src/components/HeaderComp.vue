@@ -52,11 +52,14 @@ export default {
         display: block;
         text-decoration: none;
         color: #000;
-        width: 100px;
+        width: 90px;
         padding: 8px 0;
         text-align: center;
         background: #F4E041;
         border-radius: 80px;
+        @media (max-width: 320px) {
+            width: 80px;
+        }
     }
 }
 </style>

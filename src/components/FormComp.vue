@@ -79,6 +79,8 @@ export default {
 .newForm {
     display: flex;
     flex-direction: column;
+    max-width: 380px;
+    margin: 0 auto;
     &__label {
         width: 100%;
         &--phone {
@@ -155,6 +157,7 @@ export default {
             border: 1px solid #000;
             color: #000;
             border-radius: 10px 0px 0 10px;
+            cursor: pointer;
         }
         & + input[type="file"] {
             display: none;
